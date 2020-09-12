@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Weatherix</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.6.2/css/bulma.css"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Aldrich&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      .title-cont {
+        position: sticky;
+        top: 0;
+        z-index: 3;
+      }
+      .ft-css {
+        position: fixed;
+        z-index: -1;
+        bottom: 0;
+        width: 100vw;
+        height: 5vh;
+        background-image: linear-gradient(120deg, #d4fc79 0%, #96e6a1 100%);
+      }
+      html {
+        background-image: linear-gradient(120deg, #84fab0 0%, #8fd3f4 100%);
+        animation: fadeIn 0.5s ease-out;
+      }
+      @keyframes fadeIn {
+        0% {
+          opacity: 0;
+        }
+        100% {
+          opacity: 1;
+        }
+      }
+      body {
+        font-family: "Aldrich", sans-serif;
+      }
+      .box {
+        background-image: linear-gradient(to right, #6a11cb 0%, #2575fc 100%);
+        color: white;
+        margin-left: 10%;
+      }
+      .title,
+      .subtitle {
+        color: white !important;
+      }
+      .notification {
+        margin-top: 1.8rem;
+      }
+      .subo {
+        text-align: center;
+      }
+      .column {
+        float: left;
+        width: 35vw;
+      }
+      .row:after {
+        content: "";
+        display: table;
+        clear: both;
+      }
+      canvas {
+        margin-left: 11vw;
+        position: fixed;
+      }
+    </style>
+  </head>
+
+  <body>
+    <section class="hero is-primary title-cont">
+      <div class="hero-body">
+        <div class="container">
+          <h1 class="title">WEATHERX</h1>
+        </div>
+      </div>
+    </section>
+    <div class="column">
+      <canvas id="myChart" width="800" height="800"></canvas>
+    </div>
+    <div class="column">
+      <section class="section">
+        <div class="container">
+          <div class="columns">
+            <div class="column is-offset-4 is-4">
+              <form method="POST">
+                {% csrf_token %}
+                <div class="field has-addons">
+                  <div class="control is-expanded">{{ form.name }}</div>
+                  <div class="control">
+                    <button type="submit" class="button is-info">
+                      Add City
+                    </button>
+                  </div>
+                </div>
+                {% if msg %}
+                <div class="notification {{msg_class}}">{{ msg }}</div>
+                {% endif %}
+              </form>
+            </div>
+          </div>
+        </div>
+      </section>
+      <section class="container">
+        <div class="columns">
+          <div class="column is-offset-4 is-4">
+            {% if weather_data %} {% for city_weather in weather_data %}
+            <div class="box">
+              <article class="media">
+                <div class="media-left">
+                  <figure class="image is-50x50">
+                    <img
+                      src="http://openweathermap.org/img/w/{{ city_weather.icon }}.png"
+                      alt="Image"
+                    />
+                  </figure>
+                </div>
+                <div class="media-content">
+                  <div class="content">
+                    <p>
+                      <span class="title special-title"
+                        >{{ city_weather.city }}</span
+                      >
+                      <br />
+                      <span class="subtitle special-data"
+                        >{{ city_weather.temperature }}° C</span
+                      >
+                      <br />
+                      {{ city_weather.description }}
+                      <br />
+                      <span> Humidity: {{ city_weather.humidity }}% </span>
+                    </p>
+                  </div>
+                </div>
+                <div class="media-right">
+                  <a href="{% url 'delete_city' city_weather.city %}"
+                    ><button class="delete"></button
+                  ></a>
+                </div>
+              </article>
+            </div>
+            {% endfor %} {% else %}
+            <div class="box">
+              <article class="media">
+                <div class="media-content">
+                  <div class="content">
+                    <p class="subo">
+                      <span class="subtitle"
+                        >You haven't added any City yet!</span
+                      >
+                    </p>
+                  </div>
+                </div>
+              </article>
+            </div>
+            {% endif %}
+          </div>
+        </div>
+      </section>
+    </div>
+    <footer class="footer ft-css"></footer>
+  </body>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+  <script>
+    Chart.defaults.global.defaultFontColor = "black";
+    Chart.defaults.global.defaultFontSize = 20;
+    var ctx = document.getElementById("myChart").getContext("2d");
+    var test_label = document.getElementsByClassName("special-title");
+    var test_data = document.getElementsByClassName("special-data");
+    var labelo = [];
+    var labela = [];
+    function capitalize(input) {
+      var words = input.split(" ");
+      var CapitalizedWords = [];
+      words.forEach((element) => {
+        CapitalizedWords.push(
+          element[0].toUpperCase() + element.slice(1, element.length)
+        );
+      });
+      return CapitalizedWords.join(" ");
+    }
+    var label_done;
+    for (var i = 0; i < test_label.length; i++) {
+      labelo.push(capitalize(test_label[i].outerText));
+      label_done = test_data[i].outerText;
+      label_done = label_done.slice(0, -3);
+      labela.push(label_done);
+    }
+    background_test = [
+      "rgba(255, 99, 132, 1)",
+      "rgba(54, 162, 235, 1)",
+      "rgba(255, 206, 86, 1)",
+      "rgba(75, 192, 192, 1)",
+      "rgba(153, 102, 255, 1)",
+    ];
+    border_test = ["red", "blue", "yellow", "green", "purple"];
+    var background_done = [];
+    var border_done = [];
+    var counteri = 0;
+    for (i = 0; i < labelo.length; i++) {
+      if (counteri == 5){
+        counteri = 0;
+      }
+      background_done.push(background_test[counteri]);
+      border_done.push(border_test[counteri]);
+      counteri += 1;
+      console.log(counteri)
+    }
+    // console.log(background_done);
+    // console.log(border_done);
+    // console.log(labelo)
+    var myChart = new Chart(ctx, {
+      type: "bar",
+      data: {
+        labels: labelo,
+        datasets: [
+          {
+            label: "Visualizing temperature data",
+            data: labela,
+            backgroundColor: background_done,
+            borderColor: border_done,
+            borderWidth: 3,
+          },
+        ],
+      },
+      options: {
+        scales: {
+          yAxes: [
+            {
+              ticks: {
+                beginAtZero: true,
+              },
+            },
+          ],
+        },
+      },
+    });
+  </script>
+</html>
