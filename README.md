@@ -22,4 +22,3 @@ python manage.py createsuperuser
 python manage.py runserver
 ```
 ---
-[![forthebadge](https://forthebadge.com/images/badges/made-with-python.svg)](https://github.com/debugleader/Django-ToDo)
