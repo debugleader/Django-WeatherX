@@ -10,7 +10,7 @@ How to try the web app?
 cd into the repository location in your machine.
 ```
 ```python
- pip install -r requirements.txt
+pip install -r requirements.txt
 ```
 ```python
 python manage.py migrate
