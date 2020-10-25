@@ -1,7 +1,7 @@
 # WeatherX
 > WeatherX is a web application built with Django that fetches data from the [Open Weather Map API](https://openweathermap.org/api) and it uses data visualization libraries to plot the data that the user requested.
 
-![WeatherX demo image](https://i.ibb.co/MMGzBKJ/weather-XX.png)
+> ![WeatherX demo image](https://i.ibb.co/MMGzBKJ/weather-XX.png)
 
 How to try the web app?
 ------
